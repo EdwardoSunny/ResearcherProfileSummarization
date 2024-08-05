@@ -143,11 +143,8 @@ for i, topic in enumerate(topic_assignments):
     else:
         print(f"Warning: Document {i} has an invalid topic assignment {topic}")
 
-count = 0
 for topic_id, docs in enumerate(grouped_docs):
     print(f"\nDocuments in topic {topic_id} ({topic_names.get(topic_id, 'Unknown Topic')}):")
     for doc in docs:
-        print(doc[0:200])  # Adjust the printing format as needed
-        count += 1
-print(count)
+        print(doc[0:200])  
 # grouped_docs has grouped by topics [[stuf...], [aigjqigo...], ...] --> 7 docs means 7 inner list
