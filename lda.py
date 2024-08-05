@@ -25,9 +25,10 @@ researcher_dict = json.load(researcher_dict)
 
 # read in docs 
 docs = []
+docs_content = []
 for pub in researcher_dict:
     docs.append(pub["Title"] + "\n" + pub["Abstract"])
-
+    docs_content.append(pub["Title"] + "\n" + pub["Abstract"])
 
 # tokenize ==============================
 tokenizer = RegexpTokenizer(r'\w+')
@@ -123,7 +124,6 @@ topic_assignments = assign_topic_distribution(doc_topics)
 # Extract topic names
 num_words = 10  # Number of top words to display per topic
 topics_info = model.show_topics(num_topics=num_topics, num_words=num_words, formatted=False)
-
 # Create a dictionary mapping topic numbers to topic names
 topic_names = {}
 for topic_num, topic_words in topics_info:
@@ -131,6 +131,23 @@ for topic_num, topic_words in topics_info:
     topic_names[topic_num] = " ".join(words)
 
 # Output the topic assignments with topic names
+grouped_docs = [[] for _ in range(num_topics)]
+
+# Group documents by their assigned topic
 for i, topic in enumerate(topic_assignments):
     topic_name = topic_names.get(topic, "Unknown Topic")
     print(f"Document {i} is assigned to topic {topic} ({topic_name})")
+    # Ensure topic index is valid
+    if topic < num_topics:
+        grouped_docs[topic].append(docs_content[i])
+    else:
+        print(f"Warning: Document {i} has an invalid topic assignment {topic}")
+
+count = 0
+for topic_id, docs in enumerate(grouped_docs):
+    print(f"\nDocuments in topic {topic_id} ({topic_names.get(topic_id, 'Unknown Topic')}):")
+    for doc in docs:
+        print(doc[0:200])  # Adjust the printing format as needed
+        count += 1
+print(count)
+# grouped_docs has grouped by topics [[stuf...], [aigjqigo...], ...] --> 7 docs means 7 inner list
