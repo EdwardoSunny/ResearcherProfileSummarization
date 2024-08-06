@@ -30,9 +30,10 @@ class DivConqSummary:
         # print("COUNT:", count)
         return result
         
-    def get_GPT_4_response(self, prompt):
-        if (len(prompt) == 0):
+    def get_GPT_4_response(self, prompt, document):
+        if (len(document) == 0):
            return "" 
+        prompt = prompt + document
 
         if ("You are an assistant that explains and summaries the research directions of researchers. Your sole task is to provide detailed and accurate description of the researcher" in prompt):
             print(prompt)
@@ -52,8 +53,8 @@ class DivConqSummary:
     def process_chunk(self, document):
         # Get the GPT response for each entry in the document_list
 
-        input_prompt = "You are a summarization assistant that summaries the given research abstracts very very detailedly without losing information on any of the abstracts provided. Your sole task is to provide very detailed and accurate summaries of the input abstracts and preserves all the ideas in each abstract but condensing the information. You must not miss or leave out any details in the every original abstracts in your summary, all abstract topics must be present in the summary. The summary must be a concise long paragraph with all abstract details. Only answer with the summary, do not say anything extra. Here are the abstracts:\n\n" + document
-        return self.get_GPT_4_response(input_prompt)
+        input_prompt = "You are a summarization assistant that summaries the given research abstracts very very detailedly without losing information on any of the abstracts provided. Your sole task is to provide very detailed and accurate summaries of the input abstracts and preserves all the ideas in each abstract but condensing the information. You must not miss or leave out any details in the every original abstracts in your summary, all abstract topics must be present in the summary. The summary must be a concise long paragraph with all abstract details. Only answer with the summary, do not say anything extra. Here are the abstracts:\n\n" 
+        return self.get_GPT_4_response(input_prompt, document)
 
     def run(self):
         # Create a Pool of workers
@@ -74,7 +75,10 @@ class DivConqSummary:
         combined_summaries = ""
         for summary in self.documents_list:
             combined_summaries += summary + "\n"
-        self.documents_list = [self.get_GPT_4_response("You are an assistant that explains and summaries the research directions of researchers. Your sole task is to provide detailed and accurate description of the researcher's directions based on some descriptive text on studies the researcher has done. Ensure any research directions you explain are atomic, there should not be combination directions such as AI in dermatology, Machine Learning and Neuroscience, instead should be separated like AI, dermatology, etc. Break up interdisciplinary fields into atomic topics/fields for clarity. Please list all atomic topics and directions first then begin explaining details for each field and topic you listed. You must cover ALL areas of the researcher's works and NOT miss any details. Only answer with the description without saying anything extra. Answer in a long detailed paragraph. Do NOT use any markdown syntax or formatting, just use plain text. Here are some descriptions of the works the researcher has done: \n\n" + combined_summaries)]
+
+        example = "This researcher's research directions can be categorized into the following atomic topics and fields: deep learning, convolutional neural networks (CNNs)... Deep learning is a central focus of this researcher's research, exploring the development and optimization of neural networks that can learn from large amounts of data... Convolutional neural networks (CNNs) are a specific type of neural network that LeCun has significantly advanced. His work in this area involves improving the design and efficiency of CNNs, which are especially effective for image and video recognition tasks. This includes the development of novel CNN architectures and techniques to enhance their capability to process and understand visual information. Self-supervised learning is another key area of LeCun's research..."
+
+        self.documents_list = [self.get_GPT_4_response(f"You are an assistant that explains and summaries the research directions of researchers. Your sole task is to provide detailed and accurate description of the researcher's directions based on summaries of the research the researcher has done. Break up interdisciplinary fields into atomic topics/fields for clarity. You must cover ALL areas of the researcher's works and NOT miss any details. Only answer with the description without saying anything extra. Answer in a long detailed paragraph. Ensure any research directions you explain are atomic, there should not be combination directions such as AI in dermatology, Machine Learning and Neuroscience, instead should be separated like AI, dermatology, machine learning, neuroscience etc. Do NOT use any markdown syntax or formatting, just use plain text. Please list all atomic topics and directions first then begin explaining details for each field and topic you listed. Here are an example of a description you should generate: \n\n {example} \n\n Here are some research abstract summaries of the researcher: \n\n",  combined_summaries)]
         
         et = time.time()
         # print("Multiprocessing time:", et-st)

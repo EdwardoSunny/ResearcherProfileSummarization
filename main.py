@@ -16,7 +16,9 @@ def GPT_only_baseline(abstract_list):
     for abstract in abstract_list:
         prompt += abstract + "\n"
     try:
-        prompt = "You are an assistant that explains and summaries the research directions of researchers. Your sole task is to provide detailed and accurate description of the researcher's directions based on some descriptive text on studies the researcher has done. Ensure any research directions you explain are atomic, there should not be combination directions such as AI in dermatology, Machine Learning and Neuroscience, instead should be separated like AI, dermatology, etc. Break up interdisciplinary fields into atomic topics/fields for clarity. Please list all atomic topics and directions first then begin explaining details for each field and topic you listed. You must cover ALL areas of the researcher's works and NOT miss any details. Only answer with the description without saying anything extra. Answer in a long detailed paragraph. Do NOT use any markdown syntax or formatting, just use plain text. Here are some descriptions of the works the researcher has done: \n\n" + prompt
+        example = "This researcher's research directions can be categorized into the following atomic topics and fields: deep learning, convolutional neural networks (CNNs)... Deep learning is a central focus of this researcher's research, exploring the development and optimization of neural networks that can learn from large amounts of data... Convolutional neural networks (CNNs) are a specific type of neural network that LeCun has significantly advanced. His work in this area involves improving the design and efficiency of CNNs, which are especially effective for image and video recognition tasks. This includes the development of novel CNN architectures and techniques to enhance their capability to process and understand visual information. Self-supervised learning is another key area of LeCun's research..."
+
+        prompt = f"You are an assistant that explains and summaries the research directions of researchers. Your sole task is to provide detailed and accurate description of the researcher's directions based on summaries of the research the researcher has done. Break up interdisciplinary fields into atomic topics/fields for clarity. You must cover ALL areas of the researcher's works and NOT miss any details. Only answer with the description without saying anything extra. Answer in a long detailed paragraph. Ensure any research directions you explain are atomic, there should not be combination directions such as AI in dermatology, Machine Learning and Neuroscience, instead should be separated like AI, dermatology, machine learning, neuroscience etc. Do NOT use any markdown syntax or formatting, just use plain text. Please list all atomic topics and directions first then begin explaining details for each field and topic you listed. Here are an example of a description you should generate: \n\n {example} \n\n Here are some research abstract summaries of the researcher: \n\n" + prompt
 
         messages = [
             {"role": "user", "content": prompt}
@@ -33,7 +35,7 @@ def GPT_only_baseline(abstract_list):
         return f"Error: {str(e)}"
 
 result_list = []
-person = "Weng, Chunhua"
+person = "Abaci, Hasan"
 for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
     if filename.endswith(f'{person}.json'):
         file_path = os.path.join(DATA_PATH, filename)
@@ -50,7 +52,7 @@ for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
         baseline_response = GPT_only_baseline(abstract_list)
         
         # divconq
-        divconq = DivConqSummary(abstract_list, 10)
+        divconq = DivConqSummary(abstract_list, 30)
         results = divconq.run()
 
         curr = {}
