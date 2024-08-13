@@ -35,9 +35,8 @@ def GPT_only_baseline(abstract_list):
         return f"Error: {str(e)}"
 
 result_list = []
-person = "Abaci, Hasan"
 for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
-    if filename.endswith(f'{person}.json'):
+    if filename.endswith('.json'):
         file_path = os.path.join(DATA_PATH, filename)
         
         with open(file_path, 'r') as file:
@@ -49,7 +48,7 @@ for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
             abstract_list.append(full_abstract)
         researcher_name = filename.replace(".json", "")
         # GPT only baseline
-        baseline_response = GPT_only_baseline(abstract_list)
+        # baseline_response = GPT_only_baseline(abstract_list)
         
         # divconq
         divconq = DivConqSummary(abstract_list, 30)
@@ -58,11 +57,9 @@ for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
         curr = {}
         curr["Name"] = researcher_name
         curr["NumAbstracts"] = len(abstract_list)
-        curr["GPT4Baseline"] = baseline_response
+        # curr["GPT4Baseline"] = baseline_response
         curr["DivConq"] = results[0]
         result_list.append(curr)
-        break
-
 
 with open(OUTPUT_PATH + 'results.json', 'w', encoding='utf-8') as f:
     json.dump(result_list, f, ensure_ascii=False, indent=4)
