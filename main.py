@@ -7,7 +7,7 @@ import time
 
 client = OpenAI()
 
-DATA_PATH = 'cuimc_data/output'
+DATA_PATH = 'human_eval_data/'
 OUTPUT_PATH = 'output_data/'
 
 def GPT_only_baseline(abstract_list):
@@ -44,7 +44,13 @@ for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
        
         abstract_list = []
         for i in range(0, len(data)):
-            full_abstract = data[i]["Title"] + ": " + data[i]["Abstract"]
+            title = data[i]["Title"] 
+            abstract = data[i]["Abstract"]
+            if title is None: 
+                title = ""
+            if abstract is None: 
+                abstract = ""
+            full_abstract = title + ": " + abstract 
             abstract_list.append(full_abstract)
         researcher_name = filename.replace(".json", "")
         # GPT only baseline
@@ -61,5 +67,5 @@ for filename in tqdm.tqdm(os.listdir(DATA_PATH)):
         curr["DivConq"] = results[0]
         result_list.append(curr)
 
-with open(OUTPUT_PATH + 'results.json', 'w', encoding='utf-8') as f:
+with open(OUTPUT_PATH + 'yilu_results.json', 'w', encoding='utf-8') as f:
     json.dump(result_list, f, ensure_ascii=False, indent=4)
